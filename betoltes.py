@@ -9,17 +9,29 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
+def list_files(folder_path):
+    return [os.path.join(folder_path, f).replace(os.sep, '/') for f in os.listdir(folder_path)
+            if os.path.isfile(os.path.join(folder_path, f))]
 
 def load_config(path="config.json"):
     if not os.path.exists(path):
+        print("A kód első futtatásánál meg kell adnod pár adatot.")
+        print("Ha az adatok közül bármelyik változik két futás közt akkor töröld ki a config.json fájlt.")
+        print("Az adatok megadásánál törekedj arra, hogy pontos adatokat adjál meg.")
+        print("Miután megadtad a szükséges adatokat, inditsd el újra a kódot.")
+        
+        apexUrl = input("Add meg a workspace-d bejelentkezési oldalának linkjét: ")
+        workspace = input("Add meg a workspace-d nevét: ")
+        username = input("Add meg a felhasználónevedet: ")
+        password = input("Add meg a jelszavadat: ")
+        filePaths = list_files(input("Add meg a fájlokat tartalmazó mappa elérési útvonalát: "))
+        
         default = {
-            "apex_url": "https://oracleapex.com/ords/r/apex/workspace-sign-in/oracle-apex-sign-in",
-            "workspace": "halmaibenceworkspace",
-            "username": "HALMAIB.21D@ACSJSZKI.HU",
-            "password": "Jelszo123.",
-            "zip_files": [
-                "./apexFajlok/wireframe.zip",
-            ],
+            "apex_url": apexUrl,
+            "workspace": workspace,
+            "username": username,
+            "password": password,
+            "zip_files": filePaths,
             "headless": False,
             "wait_timeout": 30
         }
@@ -78,34 +90,14 @@ def import_application(driver, wait, cfg, zip_path):
     file_input.send_keys(os.path.abspath(zip_path))
     print("  Fájl kiválasztva.")
 
-    click_next(driver, wait, "B45314626525446194")
+    driver.find_element(By.ID, "B45314626525446194").click()
     print("  1. lépés kész (fájl feltöltve).")
 
-    click_next(driver, wait, "B47638615358532853")
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(1.5)
+    driver.find_element(By.ID, "B47638615358532853").click()
     print("  2. lépés kész.")
     print(f"  Import befejezve: {os.path.basename(zip_path)}")  
-
-def click_next(driver, wait, searchedId):
-    
-    selectors = [
-        (By.ID, searchedId),
-    ]
-    btn = find_first(driver, wait, selectors)
-    btn.click()
-    time.sleep(1.5)  # várakozás az oldal frissülésére
-
-
-def find_first(driver, wait, selectors):
-    last_err = None
-    for by, sel in selectors:
-        try:
-            return wait.until(EC.element_to_be_clickable((by, sel)))
-        except TimeoutException as e:
-            last_err = e
-            continue
-    raise NoSuchElementException(
-        f"Egyik szelektor sem talált kattintható elemet: {selectors}"
-    )
 
 
 def main():
