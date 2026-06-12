@@ -1,0 +1,12 @@
+{
+  "apex_url": "https://oracleapex.com/ords/r/apex/workspace-sign-in/oracle-apex-sign-in",
+  "workspace": "halmaibenceworkspace",
+  "username": "HALMAIB.21D@ACSJSZKI.HU",
+  "password": "Jelszo123.",
+  "zip_files": [
+    "./apexFajlok/wireframe.zip",
+    "./apexFajlok/wireframe.zip"
+  ],
+  "headless": false,
+  "wait_timeout": 30
+}
