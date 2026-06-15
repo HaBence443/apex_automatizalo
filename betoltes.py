@@ -129,6 +129,5 @@ def main():
             input("\nNyomj Enter-t a böngésző bezárásához...")
         driver.quit()
 
-
 if __name__ == "__main__":
     main()
